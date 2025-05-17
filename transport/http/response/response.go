@@ -4,17 +4,22 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/zorahealth/user-service/helpers/failure"
-	"github.com/zorahealth/user-service/helpers/logger"
+	"github.com/farganamar/evv-service/helpers/failure"
+	"github.com/farganamar/evv-service/helpers/logger"
 )
 
 // Base is the base object of all responses
 type Base struct {
-	Data     *interface{} `json:"data,omitempty"`
-	Metadata *interface{} `json:"metadata,omitempty"`
-	Error    *string      `json:"error,omitempty"`
-	Message  *string      `json:"message,omitempty"`
-	Code     *int         `json:"code,omitempty"`
+	Data       *interface{} `json:"data,omitempty"`
+	Metadata   *interface{} `json:"metadata,omitempty"`
+	Error      *string      `json:"error,omitempty"`
+	Message    *string      `json:"message,omitempty"`
+	Code       *int         `json:"code,omitempty"`
+	Page       *int         `json:"page,omitempty"`
+	Limit      *int         `json:"limit,omitempty"`
+	Total      *int         `json:"total,omitempty"`
+	TotalPage  *int         `json:"total_page,omitempty"`
+	CodeStatus *string      `json:"code_status,omitempty"`
 }
 
 // NoContent sends a response without any content
@@ -30,6 +35,11 @@ func WithMessage(w http.ResponseWriter, code int, message string) {
 // WithJSON sends a response containing a JSON object
 func WithJSON(w http.ResponseWriter, code int, jsonPayload interface{}, message string) {
 	respond(w, code, Base{Data: &jsonPayload, Message: &message, Code: &code})
+}
+
+// WITHJSON data sends a response with pagination
+func WithJSONPagination(w http.ResponseWriter, code int, jsonPayload interface{}, page int, limit int, total int, totalPage int, message string) {
+	respond(w, code, Base{Data: &jsonPayload, Message: &message, Code: &code, Page: &page, Limit: &limit, Total: &total, TotalPage: &totalPage})
 }
 
 // WithMetadata sends a response containing a JSON object with metadata
@@ -54,11 +64,18 @@ func WithUnhealthy(w http.ResponseWriter) {
 	WithMessage(w, http.StatusServiceUnavailable, "SERVER UNHEALTHY")
 }
 
+func WithJSONCodeStatus(w http.ResponseWriter, code int, jsonPayload interface{}, message string, codeStatus string) {
+	respond(w, code, Base{Data: &jsonPayload, Message: &message, Code: &code, CodeStatus: &codeStatus})
+}
+
 func respond(w http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
+	response, err := json.Marshal(payload)
+	if err != nil {
+		logger.ErrorWithStack(err)
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	_, err := w.Write(response)
+	_, err = w.Write(response)
 	if err != nil {
 		logger.ErrorWithStack(err)
 	}

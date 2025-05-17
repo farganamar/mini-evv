@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/farganamar/evv-service/configs"
 	"github.com/redis/go-redis/v9"
-	"github.com/zorahealth/user-service/configs"
 )
 
 type Redis struct {

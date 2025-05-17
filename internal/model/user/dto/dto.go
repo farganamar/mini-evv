@@ -3,11 +3,11 @@ package dto
 import (
 	"time"
 
+	"github.com/farganamar/evv-service/helpers"
+	"github.com/farganamar/evv-service/helpers/failure"
+	"github.com/farganamar/evv-service/helpers/logger"
+	model "github.com/farganamar/evv-service/internal/model/user"
 	"github.com/gofrs/uuid"
-	"github.com/zorahealth/user-service/helpers"
-	"github.com/zorahealth/user-service/helpers/failure"
-	"github.com/zorahealth/user-service/helpers/logger"
-	model "github.com/zorahealth/user-service/internal/model/user"
 )
 
 type LoginRequest struct {

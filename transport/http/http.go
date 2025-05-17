@@ -10,16 +10,16 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/farganamar/evv-service/configs"
+	"github.com/farganamar/evv-service/helpers/logger"
+	"github.com/farganamar/evv-service/infras"
+	"github.com/farganamar/evv-service/transport/http/response"
+	"github.com/farganamar/evv-service/transport/http/router"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
-	"github.com/zorahealth/user-service/configs"
-	"github.com/zorahealth/user-service/helpers/logger"
-	"github.com/zorahealth/user-service/infras"
-	"github.com/zorahealth/user-service/transport/http/response"
-	"github.com/zorahealth/user-service/transport/http/router"
 )
 
 // ServerState is an
@@ -40,7 +40,7 @@ const (
 // HTTP is the HTTP server.
 type HTTP struct {
 	Config *configs.Config
-	DB     *infras.PostgresConn
+	DB     *infras.SQLiteConn
 	Router router.Router
 	State  ServerState
 	mux    *chi.Mux
@@ -48,7 +48,10 @@ type HTTP struct {
 }
 
 // NewHTTP creates a new HTTP server.
-func NewHTTP(config *configs.Config, db *infras.PostgresConn, router router.Router) *HTTP {
+func NewHTTP(
+	config *configs.Config,
+	db *infras.SQLiteConn,
+	router router.Router) *HTTP {
 	return &HTTP{
 		Config: config,
 		DB:     db,
@@ -184,7 +187,7 @@ func (h *HTTP) setupCORS() {
 }
 
 func (h *HTTP) HealthCheck(w http.ResponseWriter, r *http.Request) {
-	if err := h.DB.Read.Ping(r.Context()); err != nil {
+	if err := h.DB.DB.Ping(); err != nil {
 		logger.ErrorWithStack(err)
 		response.WithUnhealthy(w)
 		return

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/farganamar/evv-service/configs"
 	"github.com/rs/zerolog/log"
-	"github.com/zorahealth/user-service/configs"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

@@ -43,10 +43,13 @@ type Config struct {
 				Timezone string `mapstructure:"TIMEZONE"`
 			} `mapstructure:"WRITE"`
 		} `mapstructure:"POSTGRES"`
+		SQLite struct {
+			Path string `mapstructure:"PATH"`
+		}
 	} `mapstructure:"DB"`
 	Server struct {
 		Env      string `mapstructure:"ENV"`
-		LogLevel string `mapstructure:"LOG_LEVEL"`
+		LogLevel string `mapstructure:"LOGLEVEL"`
 		Port     string `mapstructure:"PORT"`
 		Shutdown struct {
 			CleanupPeriodSeconds int64 `mapstructure:"CLEANUP_PERIOD_SECONDS"`
@@ -64,6 +67,14 @@ type Config struct {
 			}
 		}
 	} `mapstructure:"cache"`
+	AccessToken struct {
+		ExpiryInHour int    `mapstructure:"EXPIRYINHOUR"`
+		Secret       string `mapstructure:"SECRET"`
+	} `mapstructure:"ACCESSTOKEN"`
+	RefreshToken struct {
+		ExpiryInHour int    `mapstructure:"EXPIRYINHOUR"`
+		Secret       string `mapstructure:"SECRET"`
+	} `mapstructure:"REFRESHTOKEN"`
 }
 
 var (

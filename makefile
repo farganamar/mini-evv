@@ -1,6 +1,12 @@
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
+
 BINARY=engine
 test: clean documents generate
-	go test -v -cover -covermode=atomic ./...
+    go test -v -cover -covermode=atomic ./...
 
 coverage: clean documents generate
 	bash coverage.sh --html
@@ -20,7 +26,7 @@ clean:
 	@rm -rf .cover wire_gen.go docs
 
 docker_build:
-	docker build -t zorahealth-user-service -f Dockerfile-local .
+	docker build -t evv-service  .
 
 docker_start:
 	docker-compose up --build
@@ -37,5 +43,36 @@ lint:
 
 generate:
 	GOFLAGS=-buildvcs=false go generate ./...
-	
+
+# SQLite Migrations
+migrate-up:
+	migrate -path migrations -database "sqlite://${DB_SQLITE_PATH}" up
+
+create-migration:
+	@read -p "Enter migration name: " name; \
+	migrate create -ext sql -dir migrations -format unix $$name
+
+migrate-down:
+	@read -p "Enter number of migrations to revert (default 1): " num; \
+	migrate -path migrations -database "sqlite3://${DB_SQLITE_PATH}" down $${num:-1}
+
+migrate-fix:
+	@read -p "Enter migration version: " version; \
+	migrate -path migrations -database "sqlite3://${DB_SQLITE_PATH}" force $$version
+
+# Legacy PostgreSQL migrations (commented out)
+# migrate-up-pg:
+# 	migrate -path migrations -database "postgres://${DB_POSTGRES_WRITE_USER}:${DB_POSTGRES_WRITE_PASSWORD}@${DB_POSTGRES_WRITE_HOST}:${DB_POSTGRES_WRITE_PORT}/${DB_POSTGRES_WRITE_NAME}?sslmode=disable" up
+#
+# migrate-down-pg:
+# 	@read -p "Enter number of migrations to revert (default 1): " num; \
+# 	migrate -path migrations -database "postgres://${DB_POSTGRES_WRITE_USER}:${DB_POSTGRES_WRITE_PASSWORD}@${DB_POSTGRES_WRITE_HOST}:${DB_POSTGRES_WRITE_PORT}/${DB_POSTGRES_WRITE_NAME}?sslmode=disable" down $${num:-1}
+#
+# migrate-fix-pg:
+# 	@read -p "Enter migration version: " version; \
+# 	migrate -path migrations -database "postgres://${DB_POSTGRES_WRITE_USER}:${DB_POSTGRES_WRITE_PASSWORD}@${DB_POSTGRES_WRITE_HOST}:${DB_POSTGRES_WRITE_PORT}/${DB_POSTGRES_WRITE_NAME}?sslmode=disable" force $$version
+
+format:
+	gofmt -s -w .
+
 .PHONY: test coverage engine clean build docker run stop lint-prepare lint documents generate

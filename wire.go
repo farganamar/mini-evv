@@ -4,16 +4,14 @@
 package main
 
 import (
+	"github.com/farganamar/evv-service/configs"
+	"github.com/farganamar/evv-service/helpers/auth"
+	"github.com/farganamar/evv-service/infras"
+	handler "github.com/farganamar/evv-service/internal/handlers"
+	"github.com/farganamar/evv-service/transport/http"
+	"github.com/farganamar/evv-service/transport/http/middleware"
+	"github.com/farganamar/evv-service/transport/http/router"
 	"github.com/google/wire"
-	"github.com/zorahealth/user-service/configs"
-	"github.com/zorahealth/user-service/helpers/auth"
-	"github.com/zorahealth/user-service/infras"
-	handler "github.com/zorahealth/user-service/internal/handlers"
-	"github.com/zorahealth/user-service/internal/repository"
-	"github.com/zorahealth/user-service/internal/service"
-	"github.com/zorahealth/user-service/transport/http"
-	"github.com/zorahealth/user-service/transport/http/middleware"
-	"github.com/zorahealth/user-service/transport/http/router"
 )
 
 // Wiring for configurations.
@@ -23,7 +21,7 @@ var configurationsServiceGen = wire.NewSet(
 
 // Wiring for persistences.
 var persistencesServiceGen = wire.NewSet(
-	infras.ProvidePostgresConn,
+	infras.ProvideSQLiteConn,
 )
 
 var cache = wire.NewSet(
@@ -35,16 +33,16 @@ var authService = wire.NewSet(
 	auth.NewTokenService,
 )
 
-// User services.
-var userServiceGen = wire.NewSet(
-	service.NewUserService,
-	wire.Bind(new(service.UserServiceInterface), new(*service.UserServiceImpl)),
-	repository.NewUserRepository,
-	wire.Bind(new(repository.UserRepoInterface), new(*repository.UserRepositoryImpl)),
+// Services.
+var ServiceGen = wire.NewSet(
+// service.NewUserService,
+// wire.Bind(new(service.UserServiceInterface), new(*service.UserServiceImpl)),
+// repository.NewUserRepository,
+// wire.Bind(new(repository.UserRepoInterface), new(*repository.UserRepositoryImpl)),
 )
 
 var initializeServiceServiceGen = wire.NewSet(
-	userServiceGen,
+	ServiceGen,
 	authService,
 )
 
@@ -56,7 +54,7 @@ var authMiddleware = wire.NewSet(
 // Wiring for HTTP routing.
 var routingServiceGen = wire.NewSet(
 	wire.Struct(new(router.DomainHandlers), "*"),
-	handler.NewUserHandler,
+	handler.NewHandler,
 	router.NewRouter,
 )
 
@@ -65,11 +63,11 @@ func InitializeServiceServiceGen() *http.HTTP {
 	wire.Build(
 		configurationsServiceGen,
 		persistencesServiceGen,
-		cache,
-		initializeServiceServiceGen,
+		// cache,
+		// initializeServiceServiceGen,
 		routingServiceGen,
 		http.NewHTTP,
-		authMiddleware,
+		// authMiddleware,
 	)
 
 	return &http.HTTP{}

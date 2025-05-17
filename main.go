@@ -1,5 +1,6 @@
 package main
 
+//go:generate go run github.com/swaggo/swag/cmd/swag init
 //go:generate go run github.com/google/wire/cmd/wire
 
 import (
@@ -8,14 +9,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/zorahealth/user-service/configs"
-	"github.com/zorahealth/user-service/helpers/logger"
-	"github.com/zorahealth/user-service/helpers/shutdown"
+	"github.com/farganamar/evv-service/configs"
+	"github.com/farganamar/evv-service/helpers/logger"
+	"github.com/farganamar/evv-service/helpers/shutdown"
 )
 
 var configServiceGen *configs.Config
 
-// @securityDefinitions.apikey EVMOauthToken
+// @securityDefinitions.apikey Bearer
 // @in header
 // @name Authorization
 func main() {

@@ -4,10 +4,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/farganamar/evv-service/configs"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/zorahealth/user-service/configs"
 )
 
 // InitLogger initializes the logger

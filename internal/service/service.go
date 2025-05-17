@@ -1,23 +1,18 @@
 package service
 
 import (
-	"github.com/zorahealth/user-service/configs"
-
-	repository "github.com/zorahealth/user-service/internal/repository"
+	"github.com/farganamar/evv-service/configs"
 )
 
-type UserServiceInterface interface {
-	UserSvc
+type ServiceInterface interface {
 }
 
 type UserServiceImpl struct {
-	UserRepository repository.UserRepoInterface
-	cfg            *configs.Config
+	cfg *configs.Config
 }
 
-func NewUserService(userRepository repository.UserRepoInterface, cfg *configs.Config) *UserServiceImpl {
+func NewUserService(cfg *configs.Config) *UserServiceImpl {
 	s := new(UserServiceImpl)
-	s.UserRepository = userRepository
 	s.cfg = cfg
 	return s
 }
