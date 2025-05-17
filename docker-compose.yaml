@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  redis-server:
+    image: redis:latest
+    container_name: redis-server
+    ports:
+      - "6379:6379"
+
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: user-service
+    ports:
+      - "5432:5432"
+
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: user-service
+    restart: on-failure
+    depends_on:
+      - redis-server
+      - postgresql
+    ports:
+      - "3200:3200"
+    volumes:
+      - ./.env:/app/.env
