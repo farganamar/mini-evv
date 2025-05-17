@@ -9,8 +9,10 @@ import (
 	"github.com/farganamar/evv-service/infras"
 	handlerV1 "github.com/farganamar/evv-service/internal/handlers/v1"
 	BaseRepository "github.com/farganamar/evv-service/internal/repository"
+	AppointmentRepository "github.com/farganamar/evv-service/internal/repository/v1/appointment"
 	UserRepository "github.com/farganamar/evv-service/internal/repository/v1/user"
 	BaseService "github.com/farganamar/evv-service/internal/service"
+	AppointmentServiceV1 "github.com/farganamar/evv-service/internal/service/v1/appointment"
 	UserServiceV1 "github.com/farganamar/evv-service/internal/service/v1/user"
 	"github.com/farganamar/evv-service/transport/http"
 	"github.com/farganamar/evv-service/transport/http/middleware"
@@ -46,6 +48,8 @@ var ServiceGen = wire.NewSet(
 	wire.Bind(new(BaseRepository.RepoInterface), new(*BaseRepository.RepositoryImpl)),
 	UserRepository.NewUserRepository,
 	wire.Bind(new(UserRepository.UserRepoInterface), new(*UserRepository.UserRepositoryImpl)),
+	AppointmentRepository.NewAppointmentRepository,
+	wire.Bind(new(AppointmentRepository.AppointmentRepoInterface), new(*AppointmentRepository.AppointmentRepositoryImpl)),
 )
 
 // User service.
@@ -54,10 +58,17 @@ var userServiceV1Gen = wire.NewSet(
 	wire.Bind(new(UserServiceV1.UserService), new(*UserServiceV1.UserServiceImpl)),
 )
 
+// Appointment service.
+var appointmentServiceV1Gen = wire.NewSet(
+	AppointmentServiceV1.NewAppointmentService,
+	wire.Bind(new(AppointmentServiceV1.AppointmentService), new(*AppointmentServiceV1.AppointmentServiceImpl)),
+)
+
 var initializeServiceServiceGen = wire.NewSet(
 	ServiceGen,
 	authService,
 	userServiceV1Gen,
+	appointmentServiceV1Gen,
 )
 
 var authMiddleware = wire.NewSet(

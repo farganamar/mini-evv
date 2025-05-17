@@ -86,6 +86,7 @@ func (s *TokenService) GenerateTokenPair(ctx context.Context, payload *ParamsGen
 }
 
 func (s *TokenService) createToken(payload *ParamsGenerateToken, secret []byte, expiry int, tokenType string) (string, error) {
+	log.Info().Interface("expiry", expiry).Msg("creating token")
 	claims := CustomClaims{
 		UserID:     payload.UserID,
 		Email:      payload.Email,

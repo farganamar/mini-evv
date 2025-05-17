@@ -79,11 +79,6 @@ func (m *AuthMiddleware) Authentication(p *ParamAuth) func(next http.Handler) ht
 				return
 			}
 
-			if claims.IsVerified != p.IsVerified {
-				response.WithJSONCodeStatus(w, http.StatusUnauthorized, nil, ErrInvalidToken.Error(), ErrUserNotVerified.Error())
-				return
-			}
-
 			if len(p.Roles) > 0 {
 				isRoleValid := false
 				hasRole := make(map[string]bool)
