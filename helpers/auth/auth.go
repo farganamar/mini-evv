@@ -27,6 +27,7 @@ var (
 type ParamsGenerateToken struct {
 	UserID     string   `json:"user_id"`
 	Email      string   `json:"email"`
+	Username   string   `json:"username"`
 	IsVerified bool     `json:"is_verified"`
 	Roles      []string `json:"roles"`
 }
@@ -44,6 +45,7 @@ type TokenPair struct {
 
 type CustomClaims struct {
 	UserID     string   `json:"user_id"`
+	Username   string   `json:"username"`
 	Email      string   `json:"email"`
 	IsVerified bool     `json:"is_verified"`
 	Roles      []string `json:"roles"`
@@ -87,7 +89,8 @@ func (s *TokenService) createToken(payload *ParamsGenerateToken, secret []byte, 
 	claims := CustomClaims{
 		UserID:     payload.UserID,
 		Email:      payload.Email,
-		IsVerified: payload.IsVerified,
+		Username:   payload.Username,
+		IsVerified: true,
 		Roles:      payload.Roles,
 		Type:       tokenType,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -166,6 +169,7 @@ func (s *TokenService) ValidateToken(paramValidate ValidateToken) (*CustomClaims
 	user := CustomClaims{
 		UserID:     claims["user_id"].(string),
 		Email:      claims["email"].(string),
+		Username:   claims["username"].(string),
 		IsVerified: claims["is_verified"].(bool),
 		Roles:      rolesString,
 		Type:       claims["type"].(string),

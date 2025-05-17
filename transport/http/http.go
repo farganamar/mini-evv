@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/farganamar/evv-service/configs"
+	"github.com/farganamar/evv-service/docs"
 	"github.com/farganamar/evv-service/helpers/logger"
 	"github.com/farganamar/evv-service/infras"
 	"github.com/farganamar/evv-service/transport/http/response"
@@ -20,6 +21,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 // ServerState is an
@@ -68,6 +70,7 @@ func (h *HTTP) SetupAndServe() {
 	h.setupMiddleware()
 	h.setupRoutes()
 	h.setupGracefulShutdown()
+	h.setupSwaggerDocs()
 	h.State = ServerStateReady
 
 	h.logServerInfo()
@@ -81,24 +84,19 @@ func (h *HTTP) SetupAndServe() {
 	if err != nil {
 		log.Error().Err(err).Stack().Send()
 	}
+}
 
-	// h.mux = chi.NewRouter()
-	// h.setupMiddleware()
-	// h.setupRoutes()
-	// h.setupGracefulShutdown()
-	// h.State = ServerStateReady
-
-	// h.logServerInfo()
-
-	// log.Info().Str("port", h.Config.Server.Port).Msg("Starting up HTTP server.")
-
-	// err := http.ListenAndServe(":"+h.Config.Server.Port, h.mux)
-	// if err != nil {
-	// 	logger.ErrorWithStack(err)
-	// }
+func (h *HTTP) setupSwaggerDocs() {
+	if h.Config.Server.Env == "development" {
+		docs.SwaggerInfo.Title = h.Config.App.Name
+		swaggerURL := fmt.Sprintf("%s/swagger/doc.json", h.Config.App.URL)
+		h.mux.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(swaggerURL)))
+		log.Info().Str("url", swaggerURL).Msg("Swagger documentation enabled.")
+	}
 }
 
 func (h *HTTP) setupRoutes() {
+	h.mux.Get("/", h.RootHandler)
 	h.mux.Get("/health", h.HealthCheck)
 	decimal.MarshalJSONWithoutQuotes = true
 	h.Router.SetupRoutes(h.mux)
@@ -184,6 +182,10 @@ func (h *HTTP) setupCORS() {
 			MaxAge:           corsConfig.MaxAgeSeconds,
 		}))
 	}
+}
+
+func (h *HTTP) RootHandler(w http.ResponseWriter, r *http.Request) {
+	response.WithMessage(w, http.StatusOK, "Welcome to appointment service 📅")
 }
 
 func (h *HTTP) HealthCheck(w http.ResponseWriter, r *http.Request) {

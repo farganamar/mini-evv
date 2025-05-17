@@ -23,6 +23,7 @@ type Config struct {
 		} `mapstructure:"cors"`
 		Name string `mapstructure:"NAME"`
 		Tz   string `mapstructure:"TZ"`
+		URL  string `mapstructure:"URL"`
 	} `mapstructure:"app"`
 	DB struct {
 		Postgres struct {

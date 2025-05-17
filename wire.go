@@ -7,7 +7,11 @@ import (
 	"github.com/farganamar/evv-service/configs"
 	"github.com/farganamar/evv-service/helpers/auth"
 	"github.com/farganamar/evv-service/infras"
-	handler "github.com/farganamar/evv-service/internal/handlers"
+	handlerV1 "github.com/farganamar/evv-service/internal/handlers/v1"
+	BaseRepository "github.com/farganamar/evv-service/internal/repository"
+	UserRepository "github.com/farganamar/evv-service/internal/repository/v1/user"
+	BaseService "github.com/farganamar/evv-service/internal/service"
+	UserServiceV1 "github.com/farganamar/evv-service/internal/service/v1/user"
 	"github.com/farganamar/evv-service/transport/http"
 	"github.com/farganamar/evv-service/transport/http/middleware"
 	"github.com/farganamar/evv-service/transport/http/router"
@@ -35,15 +39,25 @@ var authService = wire.NewSet(
 
 // Services.
 var ServiceGen = wire.NewSet(
-// service.NewUserService,
-// wire.Bind(new(service.UserServiceInterface), new(*service.UserServiceImpl)),
-// repository.NewUserRepository,
-// wire.Bind(new(repository.UserRepoInterface), new(*repository.UserRepositoryImpl)),
+	BaseService.NewService,
+	wire.Bind(new(BaseService.ServiceInterface), new(*BaseService.ServiceImpl)),
+
+	BaseRepository.NewRepository,
+	wire.Bind(new(BaseRepository.RepoInterface), new(*BaseRepository.RepositoryImpl)),
+	UserRepository.NewUserRepository,
+	wire.Bind(new(UserRepository.UserRepoInterface), new(*UserRepository.UserRepositoryImpl)),
+)
+
+// User service.
+var userServiceV1Gen = wire.NewSet(
+	UserServiceV1.NewUserService,
+	wire.Bind(new(UserServiceV1.UserService), new(*UserServiceV1.UserServiceImpl)),
 )
 
 var initializeServiceServiceGen = wire.NewSet(
 	ServiceGen,
 	authService,
+	userServiceV1Gen,
 )
 
 var authMiddleware = wire.NewSet(
@@ -54,7 +68,7 @@ var authMiddleware = wire.NewSet(
 // Wiring for HTTP routing.
 var routingServiceGen = wire.NewSet(
 	wire.Struct(new(router.DomainHandlers), "*"),
-	handler.NewHandler,
+	handlerV1.NewHandler,
 	router.NewRouter,
 )
 
@@ -63,11 +77,11 @@ func InitializeServiceServiceGen() *http.HTTP {
 	wire.Build(
 		configurationsServiceGen,
 		persistencesServiceGen,
-		// cache,
-		// initializeServiceServiceGen,
+		cache,
+		initializeServiceServiceGen,
 		routingServiceGen,
 		http.NewHTTP,
-		// authMiddleware,
+		authMiddleware,
 	)
 
 	return &http.HTTP{}
