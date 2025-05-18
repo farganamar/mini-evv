@@ -14,17 +14,17 @@ import (
 type Config struct {
 	App struct {
 		CORS struct {
-			AllowCredentials bool     `mapstructure:"ALLOW_CREDENTIALS"`
-			AllowedHeaders   []string `mapstructure:"ALLOWED_HEADERS"`
-			AllowedMethods   []string `mapstructure:"ALLOWED_METHODS"`
-			AllowedOrigins   []string `mapstructure:"ALLOWED_ORIGINS"`
+			AllowCredentials bool     `mapstructure:"ALLOWCREDENTIALS"`
+			AllowedHeaders   []string `mapstructure:"ALLOWEDHEADERS"`
+			AllowedMethods   []string `mapstructure:"ALLOWEDMETHODS"`
+			AllowedOrigins   []string `mapstructure:"ALLOWEDORIGINS"`
 			Enable           bool     `mapstructure:"ENABLE"`
-			MaxAgeSeconds    int      `mapstructure:"MAX_AGE_SECONDS"`
+			MaxAgeSeconds    int      `mapstructure:"MAXAGESECONDS"`
 		} `mapstructure:"cors"`
 		Name string `mapstructure:"NAME"`
 		Tz   string `mapstructure:"TZ"`
 		URL  string `mapstructure:"URL"`
-	} `mapstructure:"app"`
+	} `mapstructure:"APP"`
 	DB struct {
 		Postgres struct {
 			Read struct {
