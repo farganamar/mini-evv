@@ -10,11 +10,15 @@ func (h *Handler) ExternalRouter(r chi.Router) {
 		rc.Post("/login", h.UserLogin)
 	})
 
-	r.Route("/appointment", func(rc chi.Router) {
-		rc.Use(h.AuthMiddleware.Authentication(&middleware.ParamAuth{
+	r.Group(func(r chi.Router) {
+		r.Use(h.AuthMiddleware.Authentication(&middleware.ParamAuth{
 			Roles: []string{"CAREGIVER"},
 		}))
-		rc.Get("/list", h.GetAppointmentList)
+		r.Route("/appointment", func(r chi.Router) {
+			r.Get("/list", h.GetAppointmentList)
+			r.Get("/{id}/logs", h.GetAppointmentLogs)
+		})
+
 	})
 
 }

@@ -10,9 +10,11 @@ import (
 	handlerV1 "github.com/farganamar/evv-service/internal/handlers/v1"
 	BaseRepository "github.com/farganamar/evv-service/internal/repository"
 	AppointmentRepository "github.com/farganamar/evv-service/internal/repository/v1/appointment"
+	AppointmentLogRepository "github.com/farganamar/evv-service/internal/repository/v1/appointment_log"
 	UserRepository "github.com/farganamar/evv-service/internal/repository/v1/user"
 	BaseService "github.com/farganamar/evv-service/internal/service"
 	AppointmentServiceV1 "github.com/farganamar/evv-service/internal/service/v1/appointment"
+	AppointmentLogServiceV1 "github.com/farganamar/evv-service/internal/service/v1/appointment_log"
 	UserServiceV1 "github.com/farganamar/evv-service/internal/service/v1/user"
 	"github.com/farganamar/evv-service/transport/http"
 	"github.com/farganamar/evv-service/transport/http/middleware"
@@ -50,6 +52,8 @@ var ServiceGen = wire.NewSet(
 	wire.Bind(new(UserRepository.UserRepoInterface), new(*UserRepository.UserRepositoryImpl)),
 	AppointmentRepository.NewAppointmentRepository,
 	wire.Bind(new(AppointmentRepository.AppointmentRepoInterface), new(*AppointmentRepository.AppointmentRepositoryImpl)),
+	AppointmentLogRepository.NewAppointmentLogRepository,
+	wire.Bind(new(AppointmentLogRepository.AppointmentLogRepoInterface), new(*AppointmentLogRepository.AppointmentLogRepositoryImpl)),
 )
 
 // User service.
@@ -64,11 +68,18 @@ var appointmentServiceV1Gen = wire.NewSet(
 	wire.Bind(new(AppointmentServiceV1.AppointmentService), new(*AppointmentServiceV1.AppointmentServiceImpl)),
 )
 
+// Appointment log service.
+var appointmentLogServiceV1Gen = wire.NewSet(
+	AppointmentLogServiceV1.NewAppointmentLogService,
+	wire.Bind(new(AppointmentLogServiceV1.AppointmentLogService), new(*AppointmentLogServiceV1.AppointmentLogServiceImpl)),
+)
+
 var initializeServiceServiceGen = wire.NewSet(
 	ServiceGen,
 	authService,
 	userServiceV1Gen,
 	appointmentServiceV1Gen,
+	appointmentLogServiceV1Gen,
 )
 
 var authMiddleware = wire.NewSet(
