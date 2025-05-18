@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/farganamar/evv-service/helpers"
@@ -109,4 +110,155 @@ func (h *Handler) GetAppointmentLogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.WithJSON(w, http.StatusOK, appointmentLogsResponse, "OK")
+}
+
+// CheckInAppointment godoc
+// @Summary      Check In Appointment
+// @Description  Check In Appointment
+// @Tags         Appointment
+// @Accept       json
+// @Produce      json
+// @Param request body dto.UpdateAppointmentStatusRequest true "Update Appointment Status Request"
+// @Security  Bearer
+// @Success 200 {object} response.Base
+// @Success 201 {object} response.Base
+// @Failure 400 {object} response.Base
+// @Failure 401 {object} response.Base
+// @Failure 403 {object} response.Base
+// @Failure 404 {object} response.Base
+// @Failure 500 {object} response.Base
+// @Router /v1/evv/appointment/check-in [post]
+func (h *Handler) CheckInAppointment(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	ctx := r.Context()
+	auth := middleware.AuthValue{}
+	var request dto.UpdateAppointmentStatusRequest
+
+	if ctx.Value(middleware.ContextKey) != nil {
+		auth = ctx.Value(middleware.ContextKey).(middleware.AuthValue)
+	}
+
+	if err := decoder.Decode(&request); err != nil {
+		response.WithError(w, failure.BadRequest(err))
+		return
+	}
+
+	request.UserID = auth.User.UserID
+	request.MetadataDevice.Device = helpers.GetDeviceInfo(r)
+	request.MetadataDevice.IP = helpers.GetRealIP(r)
+	request.Status = "IN_PROGRESS"
+	if err := request.Validate(); err != nil {
+		response.WithError(w, failure.BadRequest(err))
+		return
+	}
+
+	err := h.AppointmentServiceV1.UpdateAppointmentStatus(ctx, request)
+	if err != nil {
+		code := failure.GetCode(err)
+		response.WithJSON(w, code, nil, err.Error())
+		return
+	}
+
+	response.WithJSON(w, http.StatusOK, nil, "OK")
+
+}
+
+// CreateAppointmentNote godoc
+// @Summary      Create Appointment Note
+// @Description  Create Appointment Note
+// @Tags         Appointment
+// @Accept       json
+// @Produce      json
+// @Param request body dto.UpdateAppointmentStatusRequest true "Update Appointment Status Request"
+// @Security  Bearer
+// @Success 200 {object} response.Base
+// @Success 201 {object} response.Base
+// @Failure 400 {object} response.Base
+// @Failure 401 {object} response.Base
+// @Failure 403 {object} response.Base
+// @Failure 404 {object} response.Base
+// @Failure 500 {object} response.Base
+// @Router /v1/evv/appointment/note [post]
+func (h *Handler) CreateAppointmentNote(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	ctx := r.Context()
+	auth := middleware.AuthValue{}
+	var request dto.UpdateAppointmentStatusRequest
+
+	if ctx.Value(middleware.ContextKey) != nil {
+		auth = ctx.Value(middleware.ContextKey).(middleware.AuthValue)
+	}
+
+	if err := decoder.Decode(&request); err != nil {
+		response.WithError(w, failure.BadRequest(err))
+		return
+	}
+
+	request.UserID = auth.User.UserID
+	request.MetadataDevice.Device = helpers.GetDeviceInfo(r)
+	request.MetadataDevice.IP = helpers.GetRealIP(r)
+	request.Status = "IN_PROGRESS"
+	if err := request.Validate(); err != nil {
+		response.WithError(w, failure.BadRequest(err))
+		return
+	}
+
+	err := h.AppointmentServiceV1.UpdateAppointmentStatus(ctx, request)
+	if err != nil {
+		code := failure.GetCode(err)
+		response.WithJSON(w, code, nil, err.Error())
+		return
+	}
+
+	response.WithJSON(w, http.StatusOK, nil, "OK")
+}
+
+// CheckOutAppointment godoc
+// @Summary      Update Appointment Status
+// @Description  Update Appointment Status
+// @Tags         Appointment
+// @Accept       json
+// @Produce      json
+// @Param request body dto.UpdateAppointmentStatusRequest true "Update Appointment Status Request"
+// @Security  Bearer
+// @Success 200 {object} response.Base
+// @Success 201 {object} response.Base
+// @Failure 400 {object} response.Base
+// @Failure 401 {object} response.Base
+// @Failure 403 {object} response.Base
+// @Failure 404 {object} response.Base
+// @Failure 500 {object} response.Base
+// @Router /v1/evv/appointment/check-out [post]
+func (h *Handler) CheckOutAppointment(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	ctx := r.Context()
+	auth := middleware.AuthValue{}
+	var request dto.UpdateAppointmentStatusRequest
+
+	if ctx.Value(middleware.ContextKey) != nil {
+		auth = ctx.Value(middleware.ContextKey).(middleware.AuthValue)
+	}
+
+	if err := decoder.Decode(&request); err != nil {
+		response.WithError(w, failure.BadRequest(err))
+		return
+	}
+
+	request.UserID = auth.User.UserID
+	request.MetadataDevice.Device = helpers.GetDeviceInfo(r)
+	request.MetadataDevice.IP = helpers.GetRealIP(r)
+	request.Status = "COMPLETED"
+	if err := request.Validate(); err != nil {
+		response.WithError(w, failure.BadRequest(err))
+		return
+	}
+
+	err := h.AppointmentServiceV1.UpdateAppointmentStatus(ctx, request)
+	if err != nil {
+		code := failure.GetCode(err)
+		response.WithJSON(w, code, nil, err.Error())
+		return
+	}
+
+	response.WithJSON(w, http.StatusOK, nil, "OK")
 }

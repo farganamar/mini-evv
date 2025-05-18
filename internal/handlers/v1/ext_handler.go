@@ -17,6 +17,9 @@ func (h *Handler) ExternalRouter(r chi.Router) {
 		r.Route("/appointment", func(r chi.Router) {
 			r.Get("/list", h.GetAppointmentList)
 			r.Get("/{id}/logs", h.GetAppointmentLogs)
+			r.Post("/check-in", h.CheckInAppointment)
+			r.Post("/note", h.CreateAppointmentNote)
+			r.Post("/check-out", h.CheckOutAppointment)
 		})
 
 	})

@@ -10,6 +10,8 @@ import (
 
 type AppointmentRepoInterface interface {
 	GetAppointmentsByUserId(ctx context.Context, arg model.Appointment, tx *sql.Tx) ([]model.Appointment, error)
+	UpdateAppointmentStatus(ctx context.Context, arg model.Appointment, tx *sql.Tx) error
+	GetAppointmentDetail(ctx context.Context, arg model.Appointment, tx *sql.Tx) (model.Appointment, error)
 }
 
 type AppointmentRepositoryImpl struct {

@@ -6,6 +6,7 @@ import (
 	"github.com/farganamar/evv-service/internal/repository"
 	AppointmentRepository "github.com/farganamar/evv-service/internal/repository/v1/appointment"
 	AppointmentLogRepository "github.com/farganamar/evv-service/internal/repository/v1/appointment_log"
+	ClientRepository "github.com/farganamar/evv-service/internal/repository/v1/client"
 	UserRepository "github.com/farganamar/evv-service/internal/repository/v1/user"
 )
 
@@ -19,6 +20,7 @@ type ServiceImpl struct {
 	UserRepository           UserRepository.UserRepoInterface
 	AppointmentRepository    AppointmentRepository.AppointmentRepoInterface
 	AppointmentLogRepository AppointmentLogRepository.AppointmentLogRepoInterface
+	ClientRepository         ClientRepository.ClientRepoInterface
 }
 
 func NewService(
@@ -28,6 +30,7 @@ func NewService(
 	userRepo UserRepository.UserRepoInterface,
 	appointmentRepo AppointmentRepository.AppointmentRepoInterface,
 	appointmentLogRepo AppointmentLogRepository.AppointmentLogRepoInterface,
+	clientRepo ClientRepository.ClientRepoInterface,
 ) *ServiceImpl {
 	s := new(ServiceImpl)
 	s.Cfg = cfg
@@ -36,5 +39,6 @@ func NewService(
 	s.AuthService = authService
 	s.AppointmentRepository = appointmentRepo
 	s.AppointmentLogRepository = appointmentLogRepo
+	s.ClientRepository = clientRepo
 	return s
 }

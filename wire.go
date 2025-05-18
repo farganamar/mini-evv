@@ -11,6 +11,7 @@ import (
 	BaseRepository "github.com/farganamar/evv-service/internal/repository"
 	AppointmentRepository "github.com/farganamar/evv-service/internal/repository/v1/appointment"
 	AppointmentLogRepository "github.com/farganamar/evv-service/internal/repository/v1/appointment_log"
+	ClientLogRepository "github.com/farganamar/evv-service/internal/repository/v1/client"
 	UserRepository "github.com/farganamar/evv-service/internal/repository/v1/user"
 	BaseService "github.com/farganamar/evv-service/internal/service"
 	AppointmentServiceV1 "github.com/farganamar/evv-service/internal/service/v1/appointment"
@@ -54,6 +55,8 @@ var ServiceGen = wire.NewSet(
 	wire.Bind(new(AppointmentRepository.AppointmentRepoInterface), new(*AppointmentRepository.AppointmentRepositoryImpl)),
 	AppointmentLogRepository.NewAppointmentLogRepository,
 	wire.Bind(new(AppointmentLogRepository.AppointmentLogRepoInterface), new(*AppointmentLogRepository.AppointmentLogRepositoryImpl)),
+	ClientLogRepository.NewClientRepository,
+	wire.Bind(new(ClientLogRepository.ClientRepoInterface), new(*ClientLogRepository.ClientRepositoryImpl)),
 )
 
 // User service.

@@ -10,6 +10,7 @@ import (
 
 type AppointmentLogRepoInterface interface {
 	GetAppointmentLogByIdandUserId(ctx context.Context, arg model.AppointmentLog, tx *sql.Tx) ([]model.AppointmentLog, error)
+	CreateLog(ctx context.Context, arg model.AppointmentLog, tx *sql.Tx) error
 }
 
 type AppointmentLogRepositoryImpl struct {

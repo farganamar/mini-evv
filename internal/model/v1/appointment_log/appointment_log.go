@@ -34,10 +34,26 @@ type AppointmentLog struct {
 	CreatedAt     null.Time       `json:"created_at" db:"created_at"`
 }
 
-// After scanning from the database, call this to prepare for JSON output
 func (a *AppointmentLog) PrepareForJSON() error {
 	if a.LogData != "" {
 		a.LogDataJSON = json.RawMessage(a.LogData)
 	}
 	return nil
+}
+
+func (a *AppointmentLog) PrepareForDB() error {
+	if len(a.LogDataJSON) > 0 {
+		a.LogData = string(a.LogDataJSON)
+	}
+
+	return nil
+}
+
+type CheckInOutLogData struct {
+	Device string `json:"device"`
+	IP     string `json:"ip"`
+}
+
+type NoteLogData struct {
+	Type string `json:"note"`
 }

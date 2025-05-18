@@ -26,3 +26,13 @@ func (d *GetAppointmentLogsRequest) Validate() error {
 
 	return nil
 }
+
+type CreateAppointmentLogRequest struct {
+	LogType       string `json:"log_type" validate:"required"`
+	AppointmentId string `json:"appointment_id" validate:"required"`
+	CaregiverId   string `json:"caregiver_id" validate:"required"`
+	Latitude      string `json:"latitude" validate:"required"`
+	Longitude     string `json:"longitude" validate:"required"`
+	Notes         string `json:"notes" validate:"required"`
+	LogData       string `json:"log_data" validate:"required"`
+}

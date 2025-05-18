@@ -38,7 +38,13 @@ func (q *AppointmentLogRepositoryImpl) GetAppointmentLogByIdandUserId(ctx contex
 
 	query += " ORDER BY timestamp ASC"
 
-	row, err := q.Query(ctx, tx, query, args...)
+	// Execute the query
+	var execTx *sql.Tx
+	if tx != nil {
+		execTx = tx
+	}
+
+	row, err := q.Query(ctx, execTx, query, args...)
 	if err != nil {
 		return res, err
 	}

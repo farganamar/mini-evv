@@ -33,7 +33,6 @@ func (q *AppointmentRepositoryImpl) GetAppointmentsByUserId(ctx context.Context,
 	if len(conditions) > 0 {
 		query += " AND " + strings.Join(conditions, " AND ")
 	} else {
-
 		return res, nil
 	}
 
