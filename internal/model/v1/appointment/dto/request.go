@@ -10,6 +10,7 @@ import (
 
 type GetAppointmentsByUserIdRequest struct {
 	UserId string `json:"user_id" validate:"required" swaggerIgnore:"true"`
+	Status string `query:"status" `
 }
 
 func (d *GetAppointmentsByUserIdRequest) Validate() error {

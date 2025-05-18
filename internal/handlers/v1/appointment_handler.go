@@ -3,10 +3,12 @@ package handler
 import (
 	"net/http"
 
+	"github.com/farganamar/evv-service/helpers"
 	"github.com/farganamar/evv-service/helpers/failure"
 	"github.com/farganamar/evv-service/internal/model/v1/appointment/dto"
 	"github.com/farganamar/evv-service/transport/http/middleware"
 	"github.com/farganamar/evv-service/transport/http/response"
+	"github.com/rs/zerolog/log"
 )
 
 // GetAppointmentList godoc
@@ -15,6 +17,7 @@ import (
 // @Tags         Appointment
 // @Accept       json
 // @Produce      json
+// @Param status query string false "status" Enums(SCHEDULED, CANCELED, COMPLETED, IN_PROGRESS)
 // @Security  Bearer
 // @Success 200 {object} response.Base
 // @Success 201 {object} response.Base
@@ -39,6 +42,12 @@ func (h *Handler) GetAppointmentList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := helpers.ParseQueryParams(r, &appointmentListRequest); err != nil {
+		response.WithError(w, failure.BadRequest(err))
+		return
+	}
+
+	log.Info().Interface("request", appointmentListRequest).Msg("GetAppointmentList")
 	appointmentListResponse, err := h.AppointmentServiceV1.GetAppointmentsByUserId(ctx, appointmentListRequest)
 	if err != nil {
 		code := failure.GetCode(err)

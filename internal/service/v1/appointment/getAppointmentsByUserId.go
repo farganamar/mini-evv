@@ -7,6 +7,7 @@ import (
 	model "github.com/farganamar/evv-service/internal/model/v1/appointment"
 	"github.com/farganamar/evv-service/internal/model/v1/appointment/dto"
 	"github.com/gofrs/uuid/v5"
+	"github.com/guregu/null/v5"
 )
 
 func (s *AppointmentServiceImpl) GetAppointmentsByUserId(ctx context.Context, arg dto.GetAppointmentsByUserIdRequest) ([]dto.GetAppointmentsByUserIdResponse, error) {
@@ -16,6 +17,7 @@ func (s *AppointmentServiceImpl) GetAppointmentsByUserId(ctx context.Context, ar
 
 	appointments, err := s.BaseService.AppointmentRepository.GetAppointmentsByUserId(ctx, model.Appointment{
 		CaregiverID: uuid.FromStringOrNil(arg.UserId),
+		Status:      null.StringFrom(arg.Status),
 	}, nil)
 	if err != nil {
 		return res, err

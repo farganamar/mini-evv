@@ -24,6 +24,12 @@ func (q *AppointmentRepositoryImpl) GetAppointmentsByUserId(ctx context.Context,
 		argIndex++
 	}
 
+	if arg.Status.Valid && arg.Status.String != "" {
+		conditions = append(conditions, fmt.Sprintf("status = $%d", argIndex))
+		args = append(args, arg.Status.String)
+		argIndex++
+	}
+
 	if len(conditions) > 0 {
 		query += " AND " + strings.Join(conditions, " AND ")
 	} else {
