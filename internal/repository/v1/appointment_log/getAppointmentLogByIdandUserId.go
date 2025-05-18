@@ -30,6 +30,12 @@ func (q *AppointmentLogRepositoryImpl) GetAppointmentLogByIdandUserId(ctx contex
 		argIndex++
 	}
 
+	if arg.LogType.Valid && arg.LogType.String != "" {
+		conditions = append(conditions, fmt.Sprintf("log_type = $%d", argIndex))
+		args = append(args, arg.LogType)
+		argIndex++
+	}
+
 	if len(conditions) > 0 {
 		query += " WHERE " + strings.Join(conditions, " AND ")
 	} else {

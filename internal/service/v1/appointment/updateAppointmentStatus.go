@@ -48,7 +48,20 @@ func (s *AppointmentServiceImpl) UpdateAppointmentStatus(ctx context.Context, ar
 		return err
 	}
 
-	if err := s.validateAppointment(ctx, appointment, arg); err != nil {
+	// Find appointment log report
+	appointmentLog, err := s.BaseService.AppointmentLogRepository.GetAppointmentLogByIdandUserId(ctx, modelAppointmentLog.AppointmentLog{
+		AppointmentID: appointment.ID,
+		CaregiverID:   uuid.FromStringOrNil(arg.UserID),
+		LogType:       null.StringFrom(string(modelAppointmentLog.LogTypeNote)),
+	}, tx)
+
+	if err != nil {
+		return err
+	}
+
+	log.Info().Interface("appointmentLog", appointmentLog).Msg("appointment log")
+
+	if err := s.validateAppointment(ctx, appointment, arg, appointmentLog); err != nil {
 		return err
 	}
 
@@ -88,7 +101,7 @@ func (s *AppointmentServiceImpl) UpdateAppointmentStatus(ctx context.Context, ar
 	return nil
 }
 
-func (s *AppointmentServiceImpl) validateAppointment(ctx context.Context, appointment model.Appointment, arg dto.UpdateAppointmentStatusRequest) error {
+func (s *AppointmentServiceImpl) validateAppointment(ctx context.Context, appointment model.Appointment, arg dto.UpdateAppointmentStatusRequest, appointmentLog []modelAppointmentLog.AppointmentLog) error {
 	if appointment.ID.IsNil() {
 		return failure.NotFound("appointment not found")
 	}
@@ -111,6 +124,10 @@ func (s *AppointmentServiceImpl) validateAppointment(ctx context.Context, appoin
 
 	if arg.Status == model.StatusCompleted && appointment.Status.String != model.StatusInProgress {
 		return errors.New("status must be IN_PROGRESS to complete the appointment")
+	}
+
+	if arg.Status == model.StatusCompleted && len(appointmentLog) == 0 {
+		return errors.New("appointment should have at least one report before completing")
 	}
 
 	if arg.VerificationCode != "" && appointment.VerificationCode.String != arg.VerificationCode {

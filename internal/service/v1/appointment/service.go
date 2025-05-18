@@ -10,6 +10,7 @@ import (
 type AppointmentService interface {
 	GetAppointmentsByUserId(ctx context.Context, arg dto.GetAppointmentsByUserIdRequest) ([]dto.GetAppointmentsByUserIdResponse, error)
 	UpdateAppointmentStatus(ctx context.Context, arg dto.UpdateAppointmentStatusRequest) error
+	GetAppointmentDetail(ctx context.Context, appointmentID string, userID string) (dto.GetAppointmentsByUserIdResponse, error)
 }
 
 type AppointmentServiceImpl struct {

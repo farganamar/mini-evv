@@ -262,3 +262,43 @@ func (h *Handler) CheckOutAppointment(w http.ResponseWriter, r *http.Request) {
 
 	response.WithJSON(w, http.StatusOK, nil, "OK")
 }
+
+// GetAppointmentDetail godoc
+// @Summary      Get Appointment Detail
+// @Description  Get Appointment Detail
+// @Tags         Appointment
+// @Accept       json
+// @Produce      json
+// @Param id path string true "Appointment ID"
+// @Security  Bearer
+// @Success 200 {object} response.Base
+// @Success 201 {object} response.Base
+// @Failure 400 {object} response.Base
+// @Failure 401 {object} response.Base
+// @Failure 403 {object} response.Base
+// @Failure 404 {object} response.Base
+// @Failure 500 {object} response.Base
+// @Router /v1/evv/appointment/{id} [get]
+func (h *Handler) GetAppointmentDetail(w http.ResponseWriter, r *http.Request) {
+	appointmentId := chi.URLParam(r, "id")
+	ctx := r.Context()
+	auth := middleware.AuthValue{}
+
+	if ctx.Value(middleware.ContextKey) != nil {
+		auth = ctx.Value(middleware.ContextKey).(middleware.AuthValue)
+	}
+
+	appointmentDetailResponse, err := h.AppointmentServiceV1.GetAppointmentDetail(ctx, appointmentId, auth.User.UserID)
+	if err != nil {
+		code := failure.GetCode(err)
+		response.WithJSON(w, code, nil, err.Error())
+		return
+	}
+
+	if appointmentDetailResponse.AppointmentId == "" {
+		response.WithJSON(w, http.StatusOK, nil, "No appointment found")
+		return
+	}
+
+	response.WithJSON(w, http.StatusOK, appointmentDetailResponse, "OK")
+}
