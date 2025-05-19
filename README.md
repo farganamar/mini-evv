@@ -107,10 +107,13 @@ make dev
 - Allows multiple caregivers request at one time book
 - Allows to rate caregivers services
 - Track caregivers location
+- Allows to reschedule the appointment
 
 3. Tech stack
 - migrate to postgresql 
 - setup CI/CD to smooth deployment
+- implement cache
+- implement unit test/integration test
 
 
 
