@@ -10,6 +10,10 @@ func (h *Handler) ExternalRouter(r chi.Router) {
 		rc.Post("/login", h.UserLogin)
 	})
 
+	r.Route("/seed", func(rc chi.Router) {
+		rc.Post("/appointment", h.SeedAppointment)
+	})
+
 	r.Group(func(r chi.Router) {
 		r.Use(h.AuthMiddleware.Authentication(&middleware.ParamAuth{
 			Roles: []string{"CAREGIVER"},

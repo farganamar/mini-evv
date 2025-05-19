@@ -302,3 +302,44 @@ func (h *Handler) GetAppointmentDetail(w http.ResponseWriter, r *http.Request) {
 
 	response.WithJSON(w, http.StatusOK, appointmentDetailResponse, "OK")
 }
+
+// SeedAppointment godoc
+// @Summary      Seed Appointment
+// @Description  Seed Appointment
+// @Tags         Seeder
+// @Accept       json
+// @Produce      json
+// @Param request body dto.SeedAppointmentRequest true "Seed Appointment Request"
+// @Success 200 {object} response.Base
+// @Success 201 {object} response.Base
+// @Failure 400 {object} response.Base
+// @Failure 401 {object} response.Base
+// @Failure 403 {object} response.Base
+// @Failure 404 {object} response.Base
+// @Failure 500 {object} response.Base
+// @Router /v1/evv/seed/appointment [post]
+func (h *Handler) SeedAppointment(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	ctx := r.Context()
+	var request dto.SeedAppointmentRequest
+
+	if err := decoder.Decode(&request); err != nil {
+		response.WithError(w, failure.BadRequest(err))
+		return
+	}
+
+	if err := request.Validate(); err != nil {
+		response.WithError(w, failure.BadRequest(err))
+		return
+	}
+
+	err := h.AppointmentServiceV1.CreateSeederAppointmentAndClient(ctx, request.Latitude, request.Longitude)
+	if err != nil {
+		code := failure.GetCode(err)
+		response.WithJSON(w, code, nil, err.Error())
+		return
+	}
+
+	response.WithJSON(w, http.StatusOK, nil, "OK")
+
+}

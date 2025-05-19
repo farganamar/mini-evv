@@ -10,6 +10,7 @@ import (
 
 type ClientRepoInterface interface {
 	GetClientDetail(ctx context.Context, arg model.Client, tx *sql.Tx) (model.Client, error)
+	CreateClient(ctx context.Context, arg model.Client, tx *sql.Tx) (model.Client, error)
 }
 
 type ClientRepositoryImpl struct {

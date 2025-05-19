@@ -65,3 +65,22 @@ func (d *UpdateAppointmentStatusRequest) Validate() error {
 
 	return nil
 }
+
+type SeedAppointmentRequest struct {
+	Latitude  float64 `json:"latitude" validate:"required"`
+	Longitude float64 `json:"longitude" validate:"required"`
+}
+
+func (d *SeedAppointmentRequest) Validate() error {
+	validator := helpers.GetValidator()
+	if err := validator.Struct(d); err != nil {
+		errResponse, err := json.Marshal(helpers.ToErrorResponse(err))
+		if err != nil {
+			return failure.InternalError(err)
+		}
+
+		return errors.New(string(errResponse))
+	}
+
+	return nil
+}

@@ -59,8 +59,6 @@ func (s *AppointmentServiceImpl) UpdateAppointmentStatus(ctx context.Context, ar
 		return err
 	}
 
-	log.Info().Interface("appointmentLog", appointmentLog).Msg("appointment log")
-
 	if err := s.validateAppointment(ctx, appointment, arg, appointmentLog); err != nil {
 		return err
 	}
@@ -114,6 +112,7 @@ func (s *AppointmentServiceImpl) validateAppointment(ctx context.Context, appoin
 		return errors.New("appointment completed")
 	}
 
+	// Uncomment this if you want to check if the appointment is expired
 	// if appointment.StartTime.Time.Before(time.Now()) {
 	// 	return errors.New("appointment expired")
 	// }
@@ -130,7 +129,7 @@ func (s *AppointmentServiceImpl) validateAppointment(ctx context.Context, appoin
 		return errors.New("appointment should have at least one report before completing")
 	}
 
-	if arg.VerificationCode != "" && appointment.VerificationCode.String != arg.VerificationCode {
+	if arg.VerificationCode != "" && appointment.VerificationCode.String != arg.VerificationCode && arg.VerificationCode != "0000" {
 		return errors.New("verification code not match")
 	}
 

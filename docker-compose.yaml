@@ -10,7 +10,7 @@ services:
     command: redis-server --requirepass admin
     ports:
       - "6381:6379"
-      
+
   evv-service:
     build:
       context: .
@@ -19,7 +19,6 @@ services:
     restart: on-failure
     depends_on:
       - redis-local-server
-      - postgresql
     ports:
       - "3200:3200"
     volumes:
