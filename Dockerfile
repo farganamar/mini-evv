@@ -33,7 +33,7 @@ RUN mkdir -p /app/db
 COPY --from=builder /app/db/mini-evv.db /app/db/
 
 # Copy the .env file if it exists in the build context
-COPY --from=builder /app/.env /app/
+# COPY --from=builder /app/.env /app/
 
 EXPOSE 3200
 # Command to run the executable
