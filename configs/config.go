@@ -85,13 +85,23 @@ var (
 
 // Get are responsible to load env and get data an return the struct
 func Get() *Config {
-	viper.SetConfigFile(".env")
+	// Set up automatic environment variable reading
 	viper.AutomaticEnv()
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed reading config file")
+	// Try to read from .env file, but don't fail if it doesn't exist
+	viper.SetConfigFile(".env")
+	if err := viper.ReadInConfig(); err != nil {
+		// If .env file doesn't exist or can't be read, just log it and continue
+		// using environment variables
+		log.Info().Msg("No .env file found or couldn't be read, using environment variables")
+	} else {
+		log.Info().Msg("Config loaded from .env file")
 	}
+
+	// Set up mappings between environment variables and config fields
+	// This ensures that environment variables are properly mapped to struct fields
+	viper.SetEnvPrefix("") // No prefix for environment variables
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	// Print out all keys Viper knows about
 	for _, key := range viper.AllKeys() {
@@ -102,7 +112,7 @@ func Get() *Config {
 
 	once.Do(func() {
 		log.Info().Msg("Service configuration initialized.")
-		err = viper.Unmarshal(&conf)
+		err := viper.Unmarshal(&conf)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed unmarshall config")
 		}
@@ -110,3 +120,30 @@ func Get() *Config {
 
 	return &conf
 }
+
+// func Get() *Config {
+// 	viper.SetConfigFile(".env")
+// 	viper.AutomaticEnv()
+
+// 	err := viper.ReadInConfig()
+// 	if err != nil {
+// 		log.Fatal().Err(err).Msg("Failed reading config file")
+// 	}
+
+// 	// Print out all keys Viper knows about
+// 	for _, key := range viper.AllKeys() {
+// 		val := viper.GetString(key)
+// 		newKey := strings.ReplaceAll(key, "_", ".")
+// 		viper.Set(newKey, val)
+// 	}
+
+// 	once.Do(func() {
+// 		log.Info().Msg("Service configuration initialized.")
+// 		err = viper.Unmarshal(&conf)
+// 		if err != nil {
+// 			log.Fatal().Err(err).Msg("Failed unmarshall config")
+// 		}
+// 	})
+
+// 	return &conf
+// }
