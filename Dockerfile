@@ -27,7 +27,6 @@ COPY --from=builder /app/main .
 
 COPY --from=builder /app/makefile .
 
-COPY --from=builder /app/.env . 
 
 # Create the db directory and copy the SQLite database file
 RUN mkdir -p /app/db
