@@ -32,6 +32,9 @@ COPY --from=builder /app/makefile .
 RUN mkdir -p /app/db
 COPY --from=builder /app/db/mini-evv.db /app/db/
 
+# Create a default .env file with minimal required settings
+RUN echo "PORT=3200\nDB_PATH=/app/db/mini-evv.db" > .env
+
 EXPOSE 3200
 # Command to run the executable
 CMD ["./main"]
